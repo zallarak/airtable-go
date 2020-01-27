@@ -3,7 +3,7 @@
 // tables
 package testBase
 
-import airtable "github.com/fabioberger/airtable-go"
+import airtable "github.com/makeitraina/airtable-go"
 
 var (
 	// TasksTableName is the name of the Airtable table containing Task records

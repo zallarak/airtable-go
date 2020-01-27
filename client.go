@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fabioberger/airtable-go/utils"
+	"github.com/makeitraina/airtable-go/utils"
 )
 
 const majorAPIVersion = 0
@@ -40,8 +40,8 @@ func New(apiKey, baseID string) (*Client, error) {
 	}
 
 	c := Client{
-		apiKey: apiKey,
-		baseID: baseID,
+		apiKey:                   apiKey,
+		baseID:                   baseID,
 		ShouldRetryIfRateLimited: true,
 		HTTPClient:               http.DefaultClient,
 	}
@@ -107,6 +107,7 @@ func (c *Client) recursivelyListRecordsAtOffset(endpoint string, offsetHash stri
 	finalRecordsHolderVal := reflect.ValueOf(finalRecordsHolder).Elem()
 	tempRecordsHolderVal := reflect.ValueOf(tempRecordsHolder).Elem()
 	finalRecordsHolderVal.Set(reflect.AppendSlice(finalRecordsHolderVal, tempRecordsHolderVal))
+	tempRecordsHolderVal.Set(reflect.Zero(tempRecordsHolderVal.Type()))
 
 	if rl.Offset != "" {
 		return c.recursivelyListRecordsAtOffset(endpoint, rl.Offset, tempRecordsHolder, finalRecordsHolder)
