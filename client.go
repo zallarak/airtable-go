@@ -63,16 +63,17 @@ func (c *Client) ListRecords(tableName string, recordsHolder interface{}, listPa
 		listParameters := listParams[len(listParams)-1]
 		endpoint = fmt.Sprintf("%s%s", endpoint, listParameters.URLEncode())
 	}
-	tempRecordsHolder := reflect.New(reflect.TypeOf(recordsHolder).Elem()).Interface()
+
 	offsetHash := ""
 	// We pass tempRecordsHolder here as a perf optimization so that we do not need to re-derive
 	// the tempRecord for each request using reflection, but can instead reuse a single one. Since
 	// tempRecordsHolder is always a slice, it's contents will be entirely replaced with each
 	// subsequent unmarshalling.
-	return c.recursivelyListRecordsAtOffset(endpoint, offsetHash, tempRecordsHolder, recordsHolder)
+	return c.recursivelyListRecordsAtOffset(endpoint, offsetHash, recordsHolder)
 }
 
-func (c *Client) recursivelyListRecordsAtOffset(endpoint string, offsetHash string, tempRecordsHolder, finalRecordsHolder interface{}) error {
+func (c *Client) recursivelyListRecordsAtOffset(endpoint string, offsetHash string, finalRecordsHolder interface{}) error {
+	tempRecordsHolder := reflect.New(reflect.TypeOf(finalRecordsHolder).Elem()).Interface()
 	finalEndpoint := fmt.Sprintf("%s&offset=%s", endpoint, offsetHash)
 	rawBody, err := c.request("GET", finalEndpoint, nil)
 	if err != nil {
@@ -107,10 +108,9 @@ func (c *Client) recursivelyListRecordsAtOffset(endpoint string, offsetHash stri
 	finalRecordsHolderVal := reflect.ValueOf(finalRecordsHolder).Elem()
 	tempRecordsHolderVal := reflect.ValueOf(tempRecordsHolder).Elem()
 	finalRecordsHolderVal.Set(reflect.AppendSlice(finalRecordsHolderVal, tempRecordsHolderVal))
-	tempRecordsHolderVal.Set(reflect.Zero(tempRecordsHolderVal.Type()))
 
 	if rl.Offset != "" {
-		return c.recursivelyListRecordsAtOffset(endpoint, rl.Offset, tempRecordsHolder, finalRecordsHolder)
+		return c.recursivelyListRecordsAtOffset(endpoint, rl.Offset, finalRecordsHolder)
 	}
 	return nil
 }
