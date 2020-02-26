@@ -3,9 +3,9 @@ package integrationTests
 import (
 	"testing"
 
-	airtable "github.com/makeitraina/airtable-go"
-	"github.com/makeitraina/airtable-go/tests/test_base"
-	"github.com/makeitraina/airtable-go/tests/test_configs"
+	airtable "github.com/zallarak/airtable-go"
+	"github.com/zallarak/airtable-go/tests/test_base"
+	"github.com/zallarak/airtable-go/tests/test_configs"
 	. "gopkg.in/check.v1"
 )
 
